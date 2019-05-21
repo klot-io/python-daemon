@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-daemon
+  namespace: klot-io-base
+  labels:
+    app: python-daemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-daemon
+  template:
+    metadata:
+      labels:
+        app: python-daemon
+    spec:
+      volumes:
+      - name: subscriptions
+        configMap:
+          name: subscriptions
+      containers:
+      - name: python-daemon
+        image: docker.io/klotio/python-daemon:0.1
+        imagePullPolicy: Always
+        env:
+        - name: REDIS_CHANNEL
+          value: klot.io/base
+        - name: SLEEP
+          value: "0.1"
+        volumeMounts:
+          mountPath: /opt/service/subscriptions
